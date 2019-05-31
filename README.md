@@ -49,18 +49,27 @@ A basic calculation: `2 + 4` consists of two operands (`2` and `4`) and an opera
 * Create a property to hold an instance of `CalculatorBrain`. This object will hold the information related to the current calculation. 
 	* Set the variable to be optional and do _not_ give it an initial value (it will default to `nil`). This variable will get set and re-set with each transaction, so it needs to be optional.
 * In `viewDidLoad`, create a new `CalculatorBrain` and assign it to the above property.
-* In `operandTapped`, go to the storyboard to see what buttons this action is connected to. Since it is connected to multiple buttons, you'll need to extract the `text` property from the button. It's likely going to require using the `if-let` technique to unwrap an optional. You should end up with a `String` which contains the text displayed on the button. This is the digit you need to add to your transaction.
+* In `operandTapped`, go to the storyboard to see what buttons this action is connected to. Since it is connected to multiple buttons, you'll need to extract the `text` property from the button. It's likely going to require using the `if-let` technique to unwrap an optional. 
+	* You should end up with a `String` which contains the text displayed on the button. This is the digit you need to add to your transaction.
     * Once you have the digit string, call `addOperandDigit` on your brain and pass in the digit string. That method returns the string you need to display on the screen, so assign the return value from that method to the `text` property of the `outputLabel`.
 * In `clearTapped`, the user is requesting to start over with a brand new transaction. So call the `clearTransaction` method. Lastly, the `outputLabel` needs to be reset. What would be a good "default" value for the calculator screen (look at the built-in calculator app or a real calculator for help)?
 * In `clearTransaction`, you need to reset the `brain` object. Meaning you need to throw away the existing transaction data and create a space for a new transaction to be stored. Look at the declaration of this property at the top of your class. What would be the most efficient way to "discard" and initialize a new calculation?
 
 ### In `CalculatorBrain.swift`:
-* Above the class, create an enum called `OperatorType`. It will help you decide which type of calculation to perform. Create 4 cases: `addition`, `subtraction`, `multiplication`, and `division`. Set the raw value type of the enum to `String`, and go look at the operator buttons in the storyboard. Notice they use different symbols from `+, -, *, /`. Copy the following symbols from this document for addition, subtraction, multiplication, and division: `+, −, ×, ÷`. Place them after each corresponding case like so, `case addition = "+"`. This mapping of case to symbol will let you determine what operation the user wants to perform from the symbol string on the button.
+* Above the class, create an enum called `OperatorType`. It will help you decide which type of calculation to perform. 
+	* Create 4 cases: `addition`, `subtraction`, `multiplication`, and `division`. 
+	* Set the raw value type of the enum to `String`, and go look at the operator buttons in the storyboard. 
+	* Notice they use different symbols from `+, -, *, /`. Copy the following symbols from this document for addition, subtraction, multiplication, and division: `+, −, ×, ÷`. 
+	* Place them after each corresponding case like so, `case addition = "+"`. This mapping of case to symbol will let you determine what operation the user wants to perform from the symbol string on the button.
 * Inside the `CalculatorBrain` class, add a property to store the operator (recommend you call it `operatorType`, since `operator` is already used by Swift). Make it optional and use the enum type you just created.
-* In `addOperandDigit`, you have to figure out first which operand the passed-in digit belongs to. If the user has entered an operator already, the `operatorType` you defined above will have a value. Use the presence or absence of an operator to decide where this `digit` belongs. Append the digit string to the end of either `operand1String` or `operand2String` and then return that string to the caller of this method.
+* In `addOperandDigit`, you have to figure out first which operand the passed-in digit belongs to. If the user has entered an operator already, the `operatorType` you defined above will have a value. 
+	* Use the presence or absence of an operator to decide where this `digit` belongs. 
+	* Append the digit string to the end of either `operand1String` or `operand2String` and then return that string to the caller of this method.
 
 ### Testing
-At this point, you should have enough of the functionality coded to let you test the app. Run the app and try adding digits to the screen. `0-9` and the `.` should be functional buttons. Once you've entered a few digits, try resetting the screen and transaction with the "C" button. Then enter a few more digits and see if a new number is displayed. A possible test could be as follows: enter "5", "9", ".", "2"; and "59.2" should be displayed. Then press clear and try another multiple digit number. It should show you a new number rather than just adding to "59.2".
+At this point, you should have enough of the functionality coded to let you test the app. Run the app and try adding digits to the screen. `0-9` and the `.` should be functional buttons. Once you've entered a few digits, try resetting the screen and transaction with the "C" button. Then enter a few more digits and see if a new number is displayed. 
+
+A possible test could be as follows: enter "5", "9", ".", "2"; and "59.2" should be displayed. Then press clear and try another multiple digit number. It should show you a new number rather than just adding to "59.2".
 
 ### In `CalculatorViewController.swift`:
 * `operatorTapped` follows virtually the same flow as the `operandTapped` method. Go to the storyboard to see how this action is wired up as well. Unlike the `IBAction` method for operands, you'll need to call `setOperator` on your brain object. Note, that method doesn't return anything.
