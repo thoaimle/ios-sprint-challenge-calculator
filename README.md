@@ -26,11 +26,35 @@ In meeting the minimum viable product (MVP) specifications listed below, your ap
 
 This repository contains a starter project that includes the UI for the calculator screen already set up. Use this project as the basis for your work.
 
+In addition, look at the built-in calculator app on your iOS device. Or play with a standard calculator if you have one. You'll be implementing the same basic functionality, so use the app or a real calculator to help you reason about how write the code for this project.
+
 ## Minimum Viable Product
 
-Your finished project must include all of the following requirements:
+Follow these steps to construct your application based on the scaffolding provided in the starter. Recognize that not every step necessary to complete this challenge will be listed below.
 
-* 
+### In `CalculatorViewController.swift`:
+* Create a property to hold an instance of `CalculatorBrain`. This object will hold the information related to the current calculation. A basic calculation consists of 2 operands and an operator (e.g. 2, 4, and +, or 2 + 4). Set the variable to be optional and do _not_ give it an initial value. This variable will get set and re-set with each transaction, so it needs to be optional.
+* In `viewDidLoad`, create a new `CalculatorBrain` and assign it to the above property.
+* In `operandTapped`, go to the storyboard to see what buttons this action is connected to. Since it is connected to multiple buttons, you'll need to extract the `text` property from the button. It's likely going to require using the `if-let` technique to unwrap an optional. You should end up with a `String` which contains the text displayed on the button. This is the digit you need to add to your transaction.
+    * Once you have the digit string, call `addOperandDigit` on your brain and pass in the digit string. That method returns the string you need to display on the screen, so assign the return value from that method to the `text` property of the `outputLabel`.
+* `operatorTapped` follows virtually the same flow as the `operandTapped` method. Go to the storyboard to see how this action is wired up as well. Unlike the above method for operands, you'll need to call `setOperator` on your brain object. Note, that method doesn't return anything.
+* In `equalTapped`, hopefully the user has entered everything they need to complete a mathematical expression. From here, you'll need to call `calculateIfPossible` on your brain object. That method will return a solution string to be displayed in your `outputLabel`, but if you look at the return type, it's actually a `String?`. Meaning you'll need to use another `if-let` to ensure the value returned isn't nil before displaying it in the label.
+* In `clearTapped`, the user is requesting to start over with a brand new transaction. So call the `clearTransaction` method. Lastly, the `outputLabel` needs to be reset. What would be a good "default" value for the calculator screen (look at the built-in calculator app or a real calculator for help)?
+* In `clearTransaction`, you need to reset the `brain` object. Meaning you need to throw away the existing transaction data and create a space for a new transaction to be stored. Look at the declaration of this property at the top of your class. What would be the most efficient way to "discard" and initialize a new calculation?
+
+### In `CalculatorBrain.swift`:
+* Above the class, create an enum called `OperatorType`. It will help you decide which type of calculation to perform. Create 4 cases: `addition`, `subtraction`, `multiplication`, and `division`. Set the raw value type of the enum to `String`, and go look at the operator buttons in the storyboard. Notice they use different symbols from `+, -, *, /`. Copy the following symbols from this document for addition, subtraction, multiplication, and division: `+, −, ×, ÷`. Place them after each corresponding case like so, `case addition = "+"`. This mapping of case to symbol will let you determine what operation the user wants to perform from the symbol string on the button.
+* Inside the `CalculatorBrain` class, add a property to store the operator (recommend you call it `operatorType`, since `operator` is already used by Swift). Make it optional and use the enum type you just created.
+* In `addOperandDigit`, you have to figure out first which operand the passed-in digit belongs to. If the user has entered an operator already, the `operatorType` you defined above will have a value. Use the presence or absence of an operator to decide where this `digit` belongs. Append the digit string to the end of either `operand1String` or `operand2String` and then return that string to the caller of this method.
+* In `setOperator`, convert the `operatorString` passed into this method into an instance of your `OperatorType` enum, and then assign it to your `operatorType` property.
+* In `calculateIfPossible`, hopefully you can calculate an answer based on the data you've stored so far in the brain.
+    1. Start by checking that the two operand strings are not empty, as `""` isn't going to turn into a valid number.
+    2. Then, check that the `operatorType` variable isn't nil, since you need a valid operator to perform the arithmetic.
+    3. Then, convert the two operand strings into `Double`s.
+    4. With all that setup done, use the type you found in step 2 to decide which kind of arithmetic you'll perform on the operands. Since you have several possible codepaths and only want to execute one of them at runtime, a `switch` is likely a good choice here.
+    5. For each kind of arithmetic, use your two operand `Double`s to perform either addition, subtraction, multiplication, or division (remember you can't divide-by-zero, so make sure to check for that before actually doing the math to avoid the app crashing. If you do encounter that, simply return `"Error"` for your answer).
+    6. Whatever your result is from the above arithmetic, return the answer as a `String`.
+    7. If you can't do the calculation because you're missing some piece of data, return `nil`.
 
 In your solution, it is essential that you follow best practices and produce clean and professional results. Schedule time to review, refine, and assess your work and perform basic professional polishing including spell-checking and grammar-checking on your work. It is better to submit a challenge that meets the minimum requirements than one that attempts too much and does not.
 
